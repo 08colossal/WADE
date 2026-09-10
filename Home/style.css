@@ -1,0 +1,15 @@
+body{
+    background-color: rgb(20, 20, 20);
+}
+
+header{
+    display: flex;
+    flex-direction:row;
+    gap: 50px;
+    background-color: red;
+    justify-content: flex-end;
+}
+
+.link-header{
+    margin: 10px;
+}
