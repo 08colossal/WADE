@@ -601,12 +601,12 @@ h1, h2, h3, h4,
     width: min(1062px, 100%);
     min-height: 64px;
     background: var(--bg-dark);
-    border-radius: 18px;
+    border-radius: 7px;
     overflow: hidden;
 }
 
 .accordion-left {
-    width: 19px;
+    width: 7px;
     flex-shrink: 0;
     background: var(--ciano);
     transition: background 0.3s ease;
