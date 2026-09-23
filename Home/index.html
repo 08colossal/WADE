@@ -1,22 +1,214 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-    <icon src="icone.jpg"></icon>
+    <title>Wade Brasil</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="header">
-        <img href="icone.jpg">
-        <a class="link-header" href=""><h4>Befarm</h4></a>
-        <a class="link-header" href=""><h4>Bluesafe</h4></a>
-        <a class="link-header" href=""><h4>Tutorial</h4></a>
+        <nav class="nav">
+            <div class="nav-center">
+                <a class="link-header" href="#">
+                    <h4>Wade</h4>
+                    <hr class="line">
+                </a>
+                <a class="link-header" href="#">
+                    <h4>BlueSafe</h4>
+                    <hr class="line">
+                </a>
+                <a class="link-header" href="#">
+                    <h4>Befarm</h4>
+                    <hr class="line">
+                </a>
+                <a class="link-header" href="#">
+                    <h4>Tutorial</h4>
+                    <hr class="line">
+                </a>
+            </div>
+            <button class="hamburger" id="hamburger" aria-label="Abrir menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </nav>
     </header>
 
-    <footer class="footer">
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="sidebar-close" id="sidebar-close" aria-label="Fechar menu">&times;</button>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="sidebar-link" href="#">Wade</a>
+            <a class="sidebar-link" href="#">BlueSafe</a>
+            <a class="sidebar-link" href="#">Befarm</a>
+            <a class="sidebar-link" href="#">Tutorial</a>
+        </nav>
+    </aside>
 
+    <section class="hero">
+        <div class="hero-bg-anim" aria-hidden="true">
+            <span class="orb orb-teal"></span>
+            <span class="orb orb-purple"></span>
+            <span class="beam"></span>
+        </div>
+        <div class="hero-video-bg">
+            <video autoplay muted loop playsinline>
+                <source src="video.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="hero-content">
+            <h1 class="wade">Wade</h1>
+            <p class="hero-subtitle">Tecnologia e bem-estar para transformar o dia a dia das famílias brasileiras.</p>
+            <div class="hero-ctas">
+                <a class="hero-btn hero-btn-primary" href="#">Baixe o app</a>
+                <a class="hero-btn hero-btn-ghost" href="#">Fale conosco</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="carousel-section">
+        <div class="carousel-card">
+            <div class="carousel-line" id="carousel-line"></div>
+            <div class="carousel-titles">
+                <span class="carousel-title active" data-index="0">Máscaras</span>
+                <span class="carousel-title" data-index="1">Lava roupas</span>
+                <span class="carousel-title" data-index="2">Shampoo</span>
+                <span class="carousel-title" data-index="3">Condicionador</span>
+            </div>
+            <div class="carousel-center">
+                <div class="carousel-content">
+                    <img class="carousel-img" id="carousel-img" src="img/mascara.png" alt="Máscara capilar Rescue Wade Brasil">
+                    <div class="carousel-slide-titles">
+                        <h3 class="carousel-slide-title" id="carousel-slide-title">RESCUE MÁSCARA CAPILAR</h3>
+                        <p class="carousel-text" id="carousel-text">A Máscara Capilar Rescue Wade Brasil foi desenvolvida com ativos de alta performance para promover uma hidratação ultra profunda. Penetra no córtex capilar, repondo massa, selando as cutículas e restaurando a elasticidade natural dos fios desde a primeira aplicação.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-dots">
+                <span class="dot active" data-index="0"></span>
+                <span class="dot" data-index="1"></span>
+                <span class="dot" data-index="2"></span>
+                <span class="dot" data-index="3"></span>
+            </div>
+        </div>
+    </section>
+
+    <section class="solutions">
+        <img class="history-title" src="img/nossaHistoria.png" alt="Nossa história">
+        <h3 class="history-entry-title" id="history-entry-title">2018 - Início da ideia</h3>
+        <p class="history-entry-text" id="history-entry-text">O fundador estuda mercados globais e observa o lento avanço da inovação e sustentabilidade no Brasil, gerando a inquietação que daria origem à empresa.</p>
+        <div class="stars">
+            <button class="star-item active" data-index="0" aria-label="Ver história de 2018">
+                <img src="img/2018.png" alt="Ano 2018">
+                <span class="star-label">2018</span>
+            </button>
+            <button class="star-item" data-index="1" aria-label="Ver história de 2019">
+                <img src="img/2019.png" alt="Ano 2019">
+                <span class="star-label">2019</span>
+            </button>
+            <button class="star-item" data-index="2" aria-label="Ver história de 2025">
+                <img src="img/2025.png" alt="Ano 2025">
+                <span class="star-label">2025</span>
+            </button>
+            <button class="star-item" data-index="3" aria-label="Ver história de 2026">
+                <img src="img/2026.png" alt="Ano 2026">
+                <span class="star-label">2026</span>
+            </button>
+        </div>
+    </section>
+
+    <section class="accordion-section">
+        <h2 class="accordion-heading">Dúvidas</h2>
+        <div class="accordion-item">
+            <div class="accordion-left"></div>
+            <div class="accordion-content">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>Os produtos WADE são sustentáveis?</span>
+                    <span class="arrow">&#8250;</span>
+                </div>
+                <div class="accordion-body">
+                    <p>Sim. Os produtos WADE são desenvolvidos com ativos de alta performance e embalagens recicláveis, respeitando o meio ambiente em todas as etapas.</p>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item open">
+            <div class="accordion-left"></div>
+            <div class="accordion-content">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>Os produtos são testados em animais?</span>
+                    <span class="arrow">&#8250;</span>
+                </div>
+                <div class="accordion-body">
+                    <p>Não. Nenhum produto WADE é testado em animais. Todos os testes são realizados com métodos alternativos certificados.</p>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-left"></div>
+            <div class="accordion-content">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>Onde posso comprar produtos WADE?</span>
+                    <span class="arrow">&#8250;</span>
+                </div>
+                <div class="accordion-body">
+                    <p>Você encontra os produtos WADE com revendedores autorizados, no nosso aplicativo e nos pontos de venda parceiros.</p>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-left"></div>
+            <div class="accordion-content">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>Como me tornar um revendedor WADE?</span>
+                    <span class="arrow">&#8250;</span>
+                </div>
+                <div class="accordion-body">
+                    <p>Baixe o aplicativo WADE, cadastre-se como revendedor e comece a vender com condições exclusivas.</p>
+                </div>
+            </div>
+        </div>
+        <div class="accordion-item">
+            <div class="accordion-left"></div>
+            <div class="accordion-content">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>Os produtos possuem orientação de uso?</span>
+                    <span class="arrow">&#8250;</span>
+                </div>
+                <div class="accordion-body">
+                    <p>Sim. Cada produto acompanha o modo de uso no rótulo, além de tutoriais completos no aplicativo e com os revendedores.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <!-- Trocar pela logo oficial quando disponível -->
+            <div class="footer-logo">Wade<small>Brasil</small></div>
+            <div class="footer-col">
+                <h4>Paginas</h4>
+                <a href="#">BlueSafe</a>
+                <a href="#">Befarm</a>
+                <a href="#">Aplicativo</a>
+            </div>
+            <div class="footer-col">
+                <h4>Contatos</h4>
+                <a href="#">Telefone</a>
+                <a href="#">Instagram</a>
+                <a href="#">Gmail</a>
+            </div>
+            <div class="footer-col">
+                <h4>Aplicativo</h4>
+                <a href="#">IOS</a>
+                <a href="#">Android</a>
+            </div>
+        </div>
+        <p class="footer-copy">© 2026 Wade Brasil. Todos os direitos reservados.</p>
     </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
