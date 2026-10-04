@@ -1,3 +1,14 @@
+/* ============= GSAP / REDUCE ============= */
+const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const HAS_GSAP = typeof window.gsap !== 'undefined';
+const HAS_ST = typeof window.ScrollTrigger !== 'undefined';
+if (HAS_GSAP && HAS_ST) {
+    gsap.registerPlugin(ScrollTrigger);
+}
+if (HAS_GSAP && typeof window.DrawSVGPlugin !== 'undefined') {
+    gsap.registerPlugin(DrawSVGPlugin);
+}
+
 /* ============= SIDEBAR / HAMBURGER (visibilidade controlada por CSS: só mobile) ============= */
 const hamburger = document.getElementById('hamburger');
 const sidebar = document.getElementById('sidebar');
@@ -24,7 +35,9 @@ if (overlay) overlay.addEventListener('click', closeSidebar);
 /* Se a sidebar estiver aberta e a tela voltar ao desktop, fecha. */
 window.addEventListener('resize', () => {
     if (window.innerWidth > MOBILE_MAX) closeSidebar();
-    moveLine(currentSlide);
+    if (typeof currentSlide !== 'undefined' && typeof moveLine === 'function') {
+        moveLine(currentSlide);
+    }
 });
 
 /* ============= CAROUSEL ============= */
@@ -63,6 +76,53 @@ const textEl = document.getElementById('carousel-text');
 const slideTitleEl = document.getElementById('carousel-slide-title');
 const lineEl = document.getElementById('carousel-line');
 const imgEl = document.getElementById('carousel-img');
+const imgWrap = document.getElementById('carousel-img-wrap');
+
+/* ============= CARROSSEL 3D (GSAP hover na imagem) ============= */
+(function initCarousel3D() {
+    if (!imgEl || typeof gsap === 'undefined') return;
+
+    const MAX_TILT = 28;
+    const targets = { rotationY: 0, rotationX: 0, scale: 1, x: 0, y: 0 };
+    gsap.set(imgEl, { transformPerspective: 600, transformOrigin: '50% 50%' });
+
+    function onMove(e) {
+        const r = imgWrap.getBoundingClientRect();
+        if (!r.width || !r.height) return;
+        const px = (e.clientX - r.left) / r.width;
+        const py = (e.clientY - r.top) / r.height;
+        gsap.to(imgEl, {
+            rotationY: (px - 0.5) * MAX_TILT * 2,
+            rotationX: (0.5 - py) * MAX_TILT * 2,
+            scale: 1.12,
+            x: (px - 0.5) * 20,
+            y: (py - 0.5) * 20,
+            duration: 0.4,
+            ease: 'power2.out',
+            overwrite: 'auto'
+        });
+    }
+
+    function onLeave() {
+        gsap.to(imgEl, {
+            rotationY: 0,
+            rotationX: 0,
+            scale: 1,
+            x: 0,
+            y: 0,
+            duration: 0.7,
+            ease: 'elastic.out(1, 0.5)',
+            overwrite: 'auto'
+        });
+    }
+
+    if (imgWrap) {
+        imgWrap.addEventListener('mousemove', onMove);
+        imgWrap.addEventListener('mouseleave', onLeave);
+    }
+    imgEl.addEventListener('mousemove', onMove);
+    imgEl.addEventListener('mouseleave', onLeave);
+})();
 
 function moveLine(index) {
     if (!lineEl || !titles.length) return;
@@ -81,25 +141,22 @@ function changeSlide(index) {
     titles.forEach(t => t.classList.remove('active'));
     if (dots[index]) dots[index].classList.add('active');
     if (titles[index]) titles[index].classList.add('active');
-    const apply = () => {
-        if (imgEl) {
-            imgEl.style.opacity = 0;
-            imgEl.src = slides[index].img;
-            imgEl.alt = slides[index].alt;
-            imgEl.onload = () => { imgEl.style.opacity = 1; };
-        }
-        if (slideTitleEl) {
-            slideTitleEl.style.opacity = 0;
-            slideTitleEl.textContent = slides[index].title;
-            slideTitleEl.style.opacity = 1;
-        }
-        if (textEl) {
-            textEl.style.opacity = 0;
-            textEl.textContent = slides[index].text;
-            textEl.style.opacity = 1;
-        }
-    };
-    apply();
+    if (imgEl) {
+        imgEl.style.opacity = 0;
+        imgEl.src = slides[index].img;
+        imgEl.alt = slides[index].alt;
+        imgEl.onload = () => { imgEl.style.opacity = 1; };
+    }
+    if (slideTitleEl) {
+        slideTitleEl.style.opacity = 0;
+        slideTitleEl.textContent = slides[index].title;
+        requestAnimationFrame(() => { slideTitleEl.style.opacity = 1; });
+    }
+    if (textEl) {
+        textEl.style.opacity = 0;
+        textEl.textContent = slides[index].text;
+        requestAnimationFrame(() => { textEl.style.opacity = 1; });
+    }
     moveLine(index);
 }
 
@@ -139,6 +196,113 @@ function toggleAccordion(header) {
     if (!isOpen) item.classList.add('open');
 }
 
+/* ============= HERO: SCRUB VIA GSAP SCROLLTRIGGER ============= */
+const heroEl = document.querySelector('.hero');
+const heroFrameEl = document.getElementById('hero-frame');
+const HERO_FRAMES = 54;
+const heroFrameUrls = [];
+for (let i = 1; i <= HERO_FRAMES; i++) {
+    heroFrameUrls.push('img/cafe/ezgif-frame-' + String(i).padStart(3, '0') + '.jpg');
+}
+let heroFrameIndex = 0;
+let heroLastGoodSrc = heroFrameUrls[0];
+
+/* 1) Pré-carrega os frames para a troca ser instantânea. */
+if (heroEl && heroFrameEl) {
+    heroFrameUrls.forEach(url => {
+        const pre = new Image();
+        pre.src = url;
+    });
+}
+
+/* 2) Se um frame falhar ao carregar, mantém o último bom. */
+if (heroFrameEl) {
+    heroFrameEl.addEventListener('load', () => {
+        heroLastGoodSrc = heroFrameEl.src;
+    });
+    heroFrameEl.addEventListener('error', () => {
+        console.warn('Falha ao carregar frame do hero:', heroFrameEl.getAttribute('src'));
+        if (heroFrameEl.src !== heroLastGoodSrc) heroFrameEl.src = heroLastGoodSrc;
+    });
+}
+
+function applyHeroFrame(progress01) {
+    if (!heroFrameEl) return;
+    const index = Math.round(Math.min(Math.max(progress01, 0), 1) * (HERO_FRAMES - 1));
+    if (index !== heroFrameIndex) {
+        heroFrameIndex = index;
+        heroFrameEl.src = heroFrameUrls[index];
+    }
+}
+
+/* 3)+5) Scrub é movimento dirigido pelo usuário: funciona com prefers-reduced-motion.
+   Janela espelha o JS puro: inicia em midHero − vh, termina em midHero. */
+if (heroEl && heroFrameEl && HAS_GSAP && HAS_ST) {
+    ScrollTrigger.create({
+        trigger: heroEl,
+        start: () => `${(heroEl.offsetHeight / 2) - window.innerHeight} top`,
+        end: () => `${heroEl.offsetHeight / 2} top`,
+        scrub: true,
+        onUpdate(self) {
+            applyHeroFrame(self.progress);
+        }
+    });
+
+    /* 4) Resize recalcula a janela (start/end são funções) */
+    let heroResizeTimer = null;
+    window.addEventListener('resize', () => {
+        clearTimeout(heroResizeTimer);
+        heroResizeTimer = setTimeout(() => ScrollTrigger.refresh(), 150);
+    });
+
+    applyHeroFrame(0);
+    ScrollTrigger.refresh();
+} else if (heroEl && heroFrameEl) {
+    /* Fallback sem GSAP: mesma matemática antiga */
+    function updateHeroFrameFallback() {
+        const heroHeight = heroEl.offsetHeight || 1;
+        const vh = window.innerHeight;
+        const midHero = heroEl.offsetTop + heroHeight / 2;
+        const progress = Math.min(Math.max((window.scrollY - (midHero - vh)) / vh, 0), 1);
+        applyHeroFrame(progress);
+    }
+    window.addEventListener('scroll', updateHeroFrameFallback, { passive: true });
+    window.addEventListener('resize', updateHeroFrameFallback);
+    updateHeroFrameFallback();
+}
+
+/* Hero autoplay: no topo (hero tela cheia) a animação continua rodando.
+   Quando o usuário rola, o scrub assume (reverse ok).
+   REDUCE = sem autoplay, só scrub dirigido pelo scroll. */
+const HERO_AUTOPLAY_MS = 80;
+const HERO_TOP_THRESHOLD = 50;
+let heroAutoTimer = null;
+let heroAutoIdx = 0;
+
+function heroAutoplayTick() {
+    heroAutoIdx = (heroAutoIdx + 1) % HERO_FRAMES;
+    if (!heroFrameEl) return;
+    if (heroAutoIdx !== heroFrameIndex) {
+        heroFrameIndex = heroAutoIdx;
+        heroFrameEl.src = heroFrameUrls[heroAutoIdx];
+    }
+}
+
+function syncHeroAutoplay() {
+    if (!heroEl || !heroFrameEl || REDUCE) return;
+    const atTop = window.scrollY <= HERO_TOP_THRESHOLD;
+    if (atTop && !heroAutoTimer) {
+        heroAutoIdx = heroFrameIndex;
+        heroAutoTimer = setInterval(heroAutoplayTick, HERO_AUTOPLAY_MS);
+    } else if (!atTop && heroAutoTimer) {
+        clearInterval(heroAutoTimer);
+        heroAutoTimer = null;
+    }
+}
+
+window.addEventListener('scroll', syncHeroAutoplay, { passive: true });
+syncHeroAutoplay();
+
 /* ============= HISTÓRIA (TIMELINE) ============= */
 const historyData = [
     {
@@ -162,6 +326,7 @@ const historyData = [
 const historyTitleEl = document.getElementById('history-entry-title');
 const historyTextEl = document.getElementById('history-entry-text');
 const starItems = document.querySelectorAll('.star-item');
+const historyProgressFill = document.getElementById('history-progress-fill');
 
 function changeHistory(index) {
     if (!historyData[index]) return;
@@ -169,6 +334,11 @@ function changeHistory(index) {
     if (starItems[index]) starItems[index].classList.add('active');
     if (historyTitleEl) historyTitleEl.textContent = historyData[index].title;
     if (historyTextEl) historyTextEl.textContent = historyData[index].text;
+    if (historyProgressFill) {
+        const n = historyData.length;
+        const pct = n > 1 ? (index / (n - 1)) * 100 : 0;
+        historyProgressFill.style.width = pct + '%';
+    }
 }
 
 starItems.forEach(star => {
@@ -176,3 +346,170 @@ starItems.forEach(star => {
         changeHistory(parseInt(star.dataset.index, 10));
     });
 });
+
+changeHistory(0);
+
+/* ============= MODAL FALE CONOSCO ============= */
+(function () {
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modal = document.getElementById('contact-modal');
+    const modalClose = document.getElementById('modal-close');
+    const heroContactBtn = document.getElementById('hero-contact-btn');
+    const tabs = document.querySelectorAll('.modal-tab');
+    const panels = document.querySelectorAll('.modal-panel');
+
+    const WHATSAPP_NUMBER = '555436015330';
+    const EMAIL_TO = 'grupo.wade@gmail.com';
+    const EMAIL_SUBJECT = 'WADE FEEDBACK';
+
+    function openModal() {
+        modalOverlay.hidden = false;
+        modal.hidden = false;
+        requestAnimationFrame(() => {
+            modalOverlay.classList.add('open');
+        });
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modalOverlay.classList.remove('open');
+        setTimeout(() => {
+            modalOverlay.hidden = true;
+            modal.hidden = true;
+        }, 300);
+        document.body.style.overflow = '';
+    }
+
+    if (heroContactBtn) {
+        heroContactBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            openModal();
+        });
+    }
+
+    const faqContactBtn = document.getElementById('faq-contact-btn');
+    if (faqContactBtn) {
+        faqContactBtn.addEventListener('click', () => openModal());
+    }
+
+    window.WadeContact = { open: openModal, close: closeModal };
+
+    if (modalClose) modalClose.addEventListener('click', closeModal);
+    if (modalOverlay) modalOverlay.addEventListener('click', (e) => { if (e.target === modalOverlay) closeModal(); });
+
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modalOverlay.hidden) closeModal(); });
+
+    // Tab switching
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.tab;
+            tabs.forEach(t => {
+                t.classList.remove('active');
+                t.setAttribute('aria-selected', 'false');
+            });
+            panels.forEach(p => { p.hidden = true; });
+            tab.classList.add('active');
+            tab.setAttribute('aria-selected', 'true');
+            const panel = document.querySelector('.modal-panel[data-tab="' + target + '"]');
+            if (panel) panel.hidden = false;
+        });
+    });
+
+    // WhatsApp form
+    const waForm = document.getElementById('whatsapp-form');
+    if (waForm) {
+        waForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('wa-nome').value.trim();
+            const assunto = document.getElementById('wa-assunto').value.trim();
+            const text = encodeURIComponent(`"${assunto}" - ${nome}`);
+            window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + text, '_blank');
+            closeModal();
+        });
+    }
+
+    // Email form
+    const emailForm = document.getElementById('email-form');
+    if (emailForm) {
+        emailForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const nome = document.getElementById('email-nome').value.trim();
+            const email = document.getElementById('email-email').value.trim();
+            const assunto = document.getElementById('email-assunto').value.trim();
+            const body = encodeURIComponent('Nome: ' + nome + '\nEmail: ' + email + '\nAssunto: ' + assunto);
+            window.location.href = 'https://mail.google.com/mail/?view=cm&fs=1&to=' + EMAIL_TO + '&su=' + encodeURIComponent(EMAIL_SUBJECT) + '&body=' + body;
+            closeModal();
+        });
+    }
+
+    // Avaliação - star rating
+    const starRating = document.getElementById('star-rating');
+    const estrelasInput = document.getElementById('aval-estrelas');
+    const starBtns = starRating ? starRating.querySelectorAll('.star-btn') : [];
+
+    starBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const value = parseInt(btn.dataset.value, 10);
+            estrelasInput.value = value;
+            starBtns.forEach(b => {
+                const v = parseInt(b.dataset.value, 10);
+                b.classList.toggle('active', v <= value);
+                b.setAttribute('aria-pressed', v <= value ? 'true' : 'false');
+            });
+        });
+    });
+
+    // Avaliação - adicionar comentário
+    const avalForm = document.getElementById('avaliacao-form');
+    const lista = document.getElementById('avaliacao-lista');
+    const btnAdd = document.getElementById('btn-add-comment');
+
+    if (btnAdd) {
+        btnAdd.addEventListener('click', () => {
+            const nome = document.getElementById('aval-nome').value.trim() || 'Anônimo';
+            const estrelas = parseInt(estrelasInput.value || '0', 10);
+            const comentario = document.getElementById('aval-comentario').value.trim();
+
+            if (!estrelas || !comentario) {
+                alert('Selecione as estrelas e escreva um comentário.');
+                return;
+            }
+
+            const item = document.createElement('div');
+            item.className = 'avaliacao-item';
+            const estrelasHtml = Array.from({ length: 5 }, (_, i) =>
+                '<svg class="avaliacao-estrela" viewBox="0 0 24 24" aria-hidden="true"><path fill="' + (i < estrelas ? '#ffd700' : 'rgba(255,255,255,0.2)') + '" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>'
+            ).join('');
+            item.innerHTML =
+                '<div class="avaliacao-header">' +
+                '  <span class="avaliacao-nome">' + escapeHtml(nome) + '</span>' +
+                '  <span class="avaliacao-estrelas">' + estrelasHtml + '</span>' +
+                '</div>' +
+                '<p class="avaliacao-comentario">' + escapeHtml(comentario) + '</p>';
+            lista.appendChild(item);
+
+            // Limpar campos do comentário (manter nome e estrelas)
+            document.getElementById('aval-comentario').value = '';
+        });
+    }
+
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    }
+})();
+
+/* ============= VOLTAR AO TOPO ============= */
+(function () {
+    const btn = document.getElementById('back-to-top');
+    if (!btn) return;
+    function sync() {
+        const show = window.scrollY > 400;
+        btn.classList.toggle('visible', show);
+        btn.hidden = !show;
+    }
+    window.addEventListener('scroll', sync, { passive: true });
+    sync();
+    btn.addEventListener('click', () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+})();
