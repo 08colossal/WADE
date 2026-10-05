@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tutorial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <!-- trocar pela logo dps -->
+    <div class="logo" data-reveal>
+      <span class="logo-mark"></span>
+      <span>Wade</span>
+    </div>
+    <nav class="topnav">
+      <a href="#" class="nav-link" data-reveal>História</a>
+      <a href="#" class="nav-link" data-reveal>Produtos</a>
+      <a href="#" class="nav-link active" data-reveal>App Wade</a>
+      <a href="#" class="nav-link" data-reveal>Contato</a>
+    </nav>
+    <button class="btn-outline magnetic" data-reveal>Consultar representante</button>
+  </div>
+</header>
+
+<section class="hero">
+  <p class="breadcrumb" data-reveal>App Wade / Tutorial</p>
+  <h1 class="hero-title" data-reveal>Tutorial do <span>App Wade</span></h1>
+  <p class="hero-sub" data-reveal>Aprenda passo a passo como usar o App Wade para realizar pedidos, acompanhar suas compras e muito mais, direto na palma da sua mão.</p>
+</section>
+
+<main class="main-grid">
+  <aside class="sidebar" id="sidebar"><ul id="sidebarList"></ul></aside>
+
+  <section class="panel" id="panel" data-reveal>
+    <h2 id="panelTitle"></h2>
+    <div id="stepsList"></div>
+    <div class="panel-nav">
+      <button class="btn-ghost magnetic" id="prevBtn">‹ Anterior</button>
+      <div class="dots" id="dots"></div>
+      <button class="btn-primary glow-btn magnetic" id="nextBtn">Próximo ›</button>
+    </div>
+  </section>
+
+  <section class="phones" data-reveal>
+    <div class="phone-wrap p1"><div class="phone phone-tilt">
+      <img class="phone-shot" src="assets/login-screen.png" alt="Tela de login do App Wade">
+    </div></div>
+    <div class="phone-wrap p2"><div class="phone phone-tilt">
+      <img class="phone-shot" src="assets/login-screen.png" alt="Tela de login do App Wade">
+    </div></div>
+  </section>
+</main>
+
+<footer class="bottombar">
+  <div class="bottombar-inner">
+    <div class="bb-item">
+      <div class="bb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></div>
+      <div class="bb-text"><strong>Baixe o App Wade</strong><span>Tenha o Wade sempre com você.</span></div>
+    </div>
+    <!-- trocar pelo badge da playstore -->
+    <a class="store-badge magnetic" href="#">▶ Google Play</a>
+    <!-- fazer o mesmo com o da app store -->
+    <a class="store-badge magnetic" href="#"> App Store</a>
+    <div class="bb-spacer"></div>
+    <div class="bb-item">
+      <div class="bb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-8h3z"/><path d="M3 19a2 2 0 0 0 2 2h1v-8H3z"/></svg></div>
+      <span class="bb-text"><span>Nossa equipe está pronta pra te ajudar sempre que precisar.</span></span>
+    </div>
+    <button class="btn-primary glow-btn magnetic">Falar com o suporte ›</button>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
