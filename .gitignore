@@ -1,0 +1,10 @@
+# Dependencies
+node_modules/
+
+# QA screenshots / baselines
+Home/_baseline/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.log
