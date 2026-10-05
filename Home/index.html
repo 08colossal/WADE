@@ -67,6 +67,7 @@
             <a class="sidebar-link" href="#">BlueSafe</a>
             <a class="sidebar-link" href="#">Befarm</a>
         </nav>
+        <button class="sidebar-login-btn" id="sidebar-login-btn" type="button">Entrar</button>
     </aside>
 
     <section class="hero">
@@ -87,11 +88,13 @@
         <div class="carousel-bubbles" aria-hidden="true"></div>
         <div class="carousel-card">
             <div class="carousel-line" id="carousel-line"></div>
-            <div class="carousel-titles">
-                <span class="carousel-title active" data-index="0">Máscaras</span>
-                <span class="carousel-title" data-index="1">Lava roupas</span>
-                <span class="carousel-title" data-index="2">Shampoo</span>
-                <span class="carousel-title" data-index="3">Condicionador</span>
+            <div class="carousel-titles-wrap">
+                <div class="carousel-titles" id="carousel-titles">
+                    <span class="carousel-title active" data-index="0">Máscaras</span>
+                    <span class="carousel-title" data-index="1">Lava roupas</span>
+                    <span class="carousel-title" data-index="2">Shampoo</span>
+                    <span class="carousel-title" data-index="3">Condicionador</span>
+                </div>
             </div>
             <div class="carousel-center">
                 <div class="carousel-content">
@@ -121,14 +124,14 @@
                     <svg viewBox="0 0 24 24" width="36" height="36"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
                 </div>
                 <h3>Missão</h3>
-                <p>Desenvolver e oferecer produtos de alta qualidade, com tecnologia e responsabilidade, criando um ecossistema onde pessoas possam gerar renda, crescer e evoluir através de conexões reais e oportunidades acessíveis.</p>
+                <p>Desenvolver produtos de alta qualidade com tecnologia e responsabilidade, criando um ecossistema onde pessoas gerem renda e cresçam através de conexões reais.</p>
             </article>
             <article class="benefit-card">
                 <div class="benefit-icon" aria-hidden="true">
                     <svg viewBox="0 0 24 24" width="36" height="36"><path fill="currentColor" d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zm0 12.5a5 5 0 1 1 0-10 5 5 0 0 1 0 10zm0-8a3 3 0 1 0 0 6 3 3 0 0 0 0-6z"/></svg>
                 </div>
                 <h3>Visão</h3>
-                <p>Ser o maior ecossistema de comercialização inteligente do Brasil.</p>
+                <p>Ser o maior ecossistema de comercialização inteligente do Brasil, referência em tecnologia, produtos e geração de renda para quem quer construir algo próprio.</p>
             </article>
             <article class="benefit-card">
                 <div class="benefit-icon" aria-hidden="true">
@@ -145,10 +148,10 @@
         <h3 class="history-entry-title" id="history-entry-title">2018 - Início da ideia</h3>
         <p class="history-entry-text" id="history-entry-text">O fundador estuda mercados globais e observa o lento avanço da inovação e sustentabilidade no Brasil, gerando a inquietação que daria origem à empresa.</p>
         <div class="stars-wrap">
-            <div class="history-progress" aria-hidden="true">
-                <div class="history-progress-fill" id="history-progress-fill"></div>
-            </div>
             <div class="stars">
+                <div class="history-progress" aria-hidden="true">
+                    <div class="history-progress-fill" id="history-progress-fill"></div>
+                </div>
                 <button class="star-item active" data-index="0" aria-label="Ver história de 2018">
                     <img src="img/2018.png" alt="Ano 2018">
                     <span class="star-label">2018</span>
