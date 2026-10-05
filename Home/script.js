@@ -1,5 +1,6 @@
 /* ============= GSAP / REDUCE ============= */
 const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const CAN_HOVER = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 const HAS_GSAP = typeof window.gsap !== 'undefined';
 const HAS_ST = typeof window.ScrollTrigger !== 'undefined';
 if (HAS_GSAP && HAS_ST) {
@@ -78,12 +79,12 @@ const lineEl = document.getElementById('carousel-line');
 const imgEl = document.getElementById('carousel-img');
 const imgWrap = document.getElementById('carousel-img-wrap');
 
-/* ============= CARROSSEL 3D (GSAP hover na imagem) ============= */
+/* ============= CARROSSEL 3D (GSAP hover na imagem) — só desktop com mouse ============= */
 (function initCarousel3D() {
     if (!imgEl || typeof gsap === 'undefined') return;
+    if (!CAN_HOVER) return;
 
     const MAX_TILT = 28;
-    const targets = { rotationY: 0, rotationX: 0, scale: 1, x: 0, y: 0 };
     gsap.set(imgEl, { transformPerspective: 600, transformOrigin: '50% 50%' });
 
     function onMove(e) {
@@ -327,6 +328,19 @@ const historyTitleEl = document.getElementById('history-entry-title');
 const historyTextEl = document.getElementById('history-entry-text');
 const starItems = document.querySelectorAll('.star-item');
 const historyProgressFill = document.getElementById('history-progress-fill');
+const historyProgressEl = document.querySelector('.history-progress');
+const starsContainer = document.querySelector('.stars-wrap .stars');
+
+function layoutHistoryProgress() {
+    if (!historyProgressEl || !starsContainer || starItems.length < 2) return;
+    const first = starItems[0].getBoundingClientRect();
+    const last = starItems[starItems.length - 1].getBoundingClientRect();
+    const host = starsContainer.getBoundingClientRect();
+    const left = first.left + first.width / 2 - host.left;
+    const right = last.left + last.width / 2 - host.left;
+    historyProgressEl.style.left = left + 'px';
+    historyProgressEl.style.width = Math.max(0, right - left) + 'px';
+}
 
 function changeHistory(index) {
     if (!historyData[index]) return;
@@ -334,6 +348,7 @@ function changeHistory(index) {
     if (starItems[index]) starItems[index].classList.add('active');
     if (historyTitleEl) historyTitleEl.textContent = historyData[index].title;
     if (historyTextEl) historyTextEl.textContent = historyData[index].text;
+    layoutHistoryProgress();
     if (historyProgressFill) {
         const n = historyData.length;
         const pct = n > 1 ? (index / (n - 1)) * 100 : 0;
@@ -348,6 +363,7 @@ starItems.forEach(star => {
 });
 
 changeHistory(0);
+window.addEventListener('resize', layoutHistoryProgress);
 
 /* ============= MODAL FALE CONOSCO ============= */
 (function () {

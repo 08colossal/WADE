@@ -11,6 +11,7 @@
         menuLogin: document.getElementById('menu-login'),
         menuAssociado: document.getElementById('menu-associado'),
         menuLogout: document.getElementById('menu-logout'),
+        sidebarLoginBtn: document.getElementById('sidebar-login-btn'),
         form: document.getElementById('login-form'),
         userInput: document.getElementById('login-user'),
         passInput: document.getElementById('login-pass'),
@@ -82,6 +83,7 @@
         const logged = !!session;
         if (els.menuLogin) els.menuLogin.hidden = logged;
         if (els.menuLogout) els.menuLogout.hidden = !logged;
+        if (els.sidebarLoginBtn) els.sidebarLoginBtn.textContent = logged ? 'Sair' : 'Entrar';
         if (els.hint) els.hint.hidden = logged;
         if (els.form) els.form.hidden = logged;
         if (els.ok) els.ok.hidden = !logged;
@@ -175,6 +177,23 @@
             logout();
             applySessionUI(null);
             closeDropdown();
+        });
+    }
+
+    function closeSidebarIfOpen() {
+        if (typeof closeSidebar === 'function') closeSidebar();
+    }
+
+    if (els.sidebarLoginBtn) {
+        els.sidebarLoginBtn.addEventListener('click', () => {
+            if (getSession()) {
+                logout();
+                applySessionUI(null);
+                closeSidebarIfOpen();
+            } else {
+                closeSidebarIfOpen();
+                openLogin();
+            }
         });
     }
 
