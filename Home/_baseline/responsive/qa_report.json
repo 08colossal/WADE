@@ -1,0 +1,268 @@
+[
+  {
+    "viewport": "mobile_360",
+    "canHover": false,
+    "reduce": false,
+    "overflow": false,
+    "scrollWidth": 360,
+    "innerWidth": 360,
+    "heroMinH": "740px",
+    "heroAR": "auto",
+    "carouselMinH": "740px",
+    "accMaxH": "592px",
+    "modalMaxH": "666px",
+    "headerTop": "0px",
+    "benefitsBg": "rgb(32, 21, 58)",
+    "accBg": "rgb(32, 21, 58)",
+    "footerCols": "295.219px",
+    "histMinH": "0px",
+    "inputFs": "16px",
+    "hamVisible": true,
+    "htmlTA": "manipulation",
+    "imgMaxW": "100%",
+    "afterAccordion": "592px",
+    "modalOpen": {
+      "overlayOpen": true,
+      "modalVisible": true,
+      "modalMaxH": "666px"
+    },
+    "carousel3D": null,
+    "touchTilt": {
+      "transform": "none",
+      "isNone": true
+    },
+    "backTop": {
+      "hidden": false,
+      "visible": true
+    },
+    "errors": []
+  },
+  {
+    "viewport": "mobile_390",
+    "canHover": false,
+    "reduce": false,
+    "overflow": false,
+    "scrollWidth": 390,
+    "innerWidth": 390,
+    "heroMinH": "844px",
+    "heroAR": "auto",
+    "carouselMinH": "844px",
+    "accMaxH": "675.2px",
+    "modalMaxH": "759.6px",
+    "headerTop": "0px",
+    "benefitsBg": "rgb(32, 21, 58)",
+    "accBg": "rgb(32, 21, 58)",
+    "footerCols": "319.812px",
+    "histMinH": "0px",
+    "inputFs": "16px",
+    "hamVisible": true,
+    "htmlTA": "manipulation",
+    "imgMaxW": "100%",
+    "afterAccordion": "675.2px",
+    "modalOpen": {
+      "overlayOpen": true,
+      "modalVisible": true,
+      "modalMaxH": "759.6px"
+    },
+    "carousel3D": null,
+    "touchTilt": {
+      "transform": "none",
+      "isNone": true
+    },
+    "backTop": {
+      "hidden": false,
+      "visible": true
+    },
+    "errors": []
+  },
+  {
+    "viewport": "mobile_414",
+    "canHover": false,
+    "reduce": false,
+    "overflow": false,
+    "scrollWidth": 414,
+    "innerWidth": 414,
+    "heroMinH": "896px",
+    "heroAR": "auto",
+    "carouselMinH": "896px",
+    "accMaxH": "716.8px",
+    "modalMaxH": "806.4px",
+    "headerTop": "0px",
+    "benefitsBg": "rgb(32, 21, 58)",
+    "accBg": "rgb(32, 21, 58)",
+    "footerCols": "339.5px",
+    "histMinH": "0px",
+    "inputFs": "16px",
+    "hamVisible": true,
+    "htmlTA": "manipulation",
+    "imgMaxW": "100%",
+    "afterAccordion": "716.8px",
+    "modalOpen": {
+      "overlayOpen": true,
+      "modalVisible": true,
+      "modalMaxH": "806.4px"
+    },
+    "carousel3D": null,
+    "touchTilt": {
+      "transform": "none",
+      "isNone": true
+    },
+    "backTop": {
+      "hidden": false,
+      "visible": true
+    },
+    "errors": []
+  },
+  {
+    "viewport": "tablet_768",
+    "canHover": false,
+    "reduce": false,
+    "overflow": false,
+    "scrollWidth": 768,
+    "innerWidth": 768,
+    "heroMinH": "1024px",
+    "heroAR": "auto",
+    "carouselMinH": "1024px",
+    "accMaxH": "819.2px",
+    "modalMaxH": "921.6px",
+    "headerTop": "0px",
+    "benefitsBg": "rgb(32, 21, 58)",
+    "accBg": "rgb(32, 21, 58)",
+    "footerCols": "294.891px 294.891px",
+    "histMinH": "0px",
+    "inputFs": "16px",
+    "hamVisible": true,
+    "htmlTA": "manipulation",
+    "imgMaxW": "100%",
+    "afterAccordion": "819.2px",
+    "modalOpen": {
+      "overlayOpen": true,
+      "modalVisible": true,
+      "modalMaxH": "921.6px"
+    },
+    "carousel3D": null,
+    "touchTilt": {
+      "transform": "none",
+      "isNone": true
+    },
+    "backTop": {
+      "hidden": false,
+      "visible": true
+    },
+    "errors": []
+  },
+  {
+    "viewport": "tablet_820",
+    "canHover": false,
+    "reduce": false,
+    "overflow": false,
+    "scrollWidth": 820,
+    "innerWidth": 820,
+    "heroMinH": "fit-content",
+    "heroAR": "16 / 9",
+    "carouselMinH": "1180px",
+    "accMaxH": "944px",
+    "modalMaxH": "1062px",
+    "headerTop": "0px",
+    "benefitsBg": "rgb(32, 21, 58)",
+    "accBg": "rgb(32, 21, 58)",
+    "footerCols": "316.203px 316.203px",
+    "histMinH": "160px",
+    "inputFs": "16px",
+    "hamVisible": false,
+    "htmlTA": "manipulation",
+    "imgMaxW": "100%",
+    "afterAccordion": "944px",
+    "modalOpen": {
+      "overlayOpen": true,
+      "modalVisible": true,
+      "modalMaxH": "1062px"
+    },
+    "carousel3D": null,
+    "touchTilt": {
+      "transform": "none",
+      "isNone": true
+    },
+    "backTop": {
+      "hidden": false,
+      "visible": true
+    },
+    "errors": []
+  },
+  {
+    "viewport": "tablet_1024",
+    "canHover": true,
+    "reduce": false,
+    "overflow": false,
+    "scrollWidth": 1024,
+    "innerWidth": 1024,
+    "heroMinH": "fit-content",
+    "heroAR": "16 / 9",
+    "carouselMinH": "768px",
+    "accMaxH": "614.4px",
+    "modalMaxH": "691.2px",
+    "headerTop": "0px",
+    "benefitsBg": "rgb(32, 21, 58)",
+    "accBg": "rgb(32, 21, 58)",
+    "footerCols": "253.219px 253.234px 253.234px",
+    "histMinH": "160px",
+    "inputFs": "16px",
+    "hamVisible": false,
+    "htmlTA": "manipulation",
+    "imgMaxW": "100%",
+    "afterAccordion": "614.4px",
+    "modalOpen": {
+      "overlayOpen": true,
+      "modalVisible": true,
+      "modalMaxH": "691.2px"
+    },
+    "carousel3D": {
+      "transform": "matrix3d(1.07243, 0, -0.322945, 0.000538242, 0.0934755, 1.07206, 0.310412, -0.000517353, 0.276001, -0.289447, 0.916539, -0.00152757, 5.9853, -6.0089, 0, 1)",
+      "isNone": false
+    },
+    "touchTilt": null,
+    "backTop": {
+      "hidden": false,
+      "visible": true
+    },
+    "errors": []
+  },
+  {
+    "viewport": "desktop_1440",
+    "canHover": true,
+    "reduce": false,
+    "overflow": false,
+    "scrollWidth": 1440,
+    "innerWidth": 1440,
+    "heroMinH": "fit-content",
+    "heroAR": "16 / 9",
+    "carouselMinH": "900px",
+    "accMaxH": "720px",
+    "modalMaxH": "810px",
+    "headerTop": "0px",
+    "benefitsBg": "rgb(32, 21, 58)",
+    "accBg": "rgb(32, 21, 58)",
+    "footerCols": "265.203px 265.203px 265.203px 265.203px",
+    "histMinH": "160px",
+    "inputFs": "16px",
+    "hamVisible": false,
+    "htmlTA": "manipulation",
+    "imgMaxW": "100%",
+    "afterAccordion": "720px",
+    "modalOpen": {
+      "overlayOpen": true,
+      "modalVisible": true,
+      "modalMaxH": "810px"
+    },
+    "carousel3D": {
+      "transform": "matrix3d(1.0722, 0, -0.323716, 0.000539526, 0.0941464, 1.07159, 0.311828, -0.000519713, 0.276538, -0.290831, 0.915939, -0.00152656, 6, -6.0385, 0, 1)",
+      "isNone": false
+    },
+    "touchTilt": null,
+    "backTop": {
+      "hidden": false,
+      "visible": true
+    },
+    "errors": []
+  }
+]
