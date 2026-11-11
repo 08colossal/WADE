@@ -197,112 +197,15 @@ function toggleAccordion(header) {
     if (!isOpen) item.classList.add('open');
 }
 
-/* ============= HERO: SCRUB VIA GSAP SCROLLTRIGGER ============= */
-const heroEl = document.querySelector('.hero');
-const heroFrameEl = document.getElementById('hero-frame');
-const HERO_FRAMES = 54;
-const heroFrameUrls = [];
-for (let i = 1; i <= HERO_FRAMES; i++) {
-    heroFrameUrls.push('img/cafe/ezgif-frame-' + String(i).padStart(3, '0') + '.jpg');
+/* ============= HERO: VIDEO DE FUNDO (LOOP) ============= */
+const heroVideo = document.getElementById('hero-video');
+if (heroVideo && REDUCE) {
+    /* prefers-reduced-motion: vídeo congelado no frame do poster (3s) */
+    const freezeFrame = () => { heroVideo.currentTime = 3; };
+    heroVideo.pause();
+    if (heroVideo.readyState >= 1) freezeFrame();
+    else heroVideo.addEventListener('loadedmetadata', freezeFrame, { once: true });
 }
-let heroFrameIndex = 0;
-let heroLastGoodSrc = heroFrameUrls[0];
-
-/* 1) Pré-carrega os frames para a troca ser instantânea. */
-if (heroEl && heroFrameEl) {
-    heroFrameUrls.forEach(url => {
-        const pre = new Image();
-        pre.src = url;
-    });
-}
-
-/* 2) Se um frame falhar ao carregar, mantém o último bom. */
-if (heroFrameEl) {
-    heroFrameEl.addEventListener('load', () => {
-        heroLastGoodSrc = heroFrameEl.src;
-    });
-    heroFrameEl.addEventListener('error', () => {
-        console.warn('Falha ao carregar frame do hero:', heroFrameEl.getAttribute('src'));
-        if (heroFrameEl.src !== heroLastGoodSrc) heroFrameEl.src = heroLastGoodSrc;
-    });
-}
-
-function applyHeroFrame(progress01) {
-    if (!heroFrameEl) return;
-    const index = Math.round(Math.min(Math.max(progress01, 0), 1) * (HERO_FRAMES - 1));
-    if (index !== heroFrameIndex) {
-        heroFrameIndex = index;
-        heroFrameEl.src = heroFrameUrls[index];
-    }
-}
-
-/* 3)+5) Scrub é movimento dirigido pelo usuário: funciona com prefers-reduced-motion.
-   Janela espelha o JS puro: inicia em midHero − vh, termina em midHero. */
-if (heroEl && heroFrameEl && HAS_GSAP && HAS_ST) {
-    ScrollTrigger.create({
-        trigger: heroEl,
-        start: () => `${(heroEl.offsetHeight / 2) - window.innerHeight} top`,
-        end: () => `${heroEl.offsetHeight / 2} top`,
-        scrub: true,
-        onUpdate(self) {
-            applyHeroFrame(self.progress);
-        }
-    });
-
-    /* 4) Resize recalcula a janela (start/end são funções) */
-    let heroResizeTimer = null;
-    window.addEventListener('resize', () => {
-        clearTimeout(heroResizeTimer);
-        heroResizeTimer = setTimeout(() => ScrollTrigger.refresh(), 150);
-    });
-
-    applyHeroFrame(0);
-    ScrollTrigger.refresh();
-} else if (heroEl && heroFrameEl) {
-    /* Fallback sem GSAP: mesma matemática antiga */
-    function updateHeroFrameFallback() {
-        const heroHeight = heroEl.offsetHeight || 1;
-        const vh = window.innerHeight;
-        const midHero = heroEl.offsetTop + heroHeight / 2;
-        const progress = Math.min(Math.max((window.scrollY - (midHero - vh)) / vh, 0), 1);
-        applyHeroFrame(progress);
-    }
-    window.addEventListener('scroll', updateHeroFrameFallback, { passive: true });
-    window.addEventListener('resize', updateHeroFrameFallback);
-    updateHeroFrameFallback();
-}
-
-/* Hero autoplay: no topo (hero tela cheia) a animação continua rodando.
-   Quando o usuário rola, o scrub assume (reverse ok).
-   REDUCE = sem autoplay, só scrub dirigido pelo scroll. */
-const HERO_AUTOPLAY_MS = 80;
-const HERO_TOP_THRESHOLD = 50;
-let heroAutoTimer = null;
-let heroAutoIdx = 0;
-
-function heroAutoplayTick() {
-    heroAutoIdx = (heroAutoIdx + 1) % HERO_FRAMES;
-    if (!heroFrameEl) return;
-    if (heroAutoIdx !== heroFrameIndex) {
-        heroFrameIndex = heroAutoIdx;
-        heroFrameEl.src = heroFrameUrls[heroAutoIdx];
-    }
-}
-
-function syncHeroAutoplay() {
-    if (!heroEl || !heroFrameEl || REDUCE) return;
-    const atTop = window.scrollY <= HERO_TOP_THRESHOLD;
-    if (atTop && !heroAutoTimer) {
-        heroAutoIdx = heroFrameIndex;
-        heroAutoTimer = setInterval(heroAutoplayTick, HERO_AUTOPLAY_MS);
-    } else if (!atTop && heroAutoTimer) {
-        clearInterval(heroAutoTimer);
-        heroAutoTimer = null;
-    }
-}
-
-window.addEventListener('scroll', syncHeroAutoplay, { passive: true });
-syncHeroAutoplay();
 
 /* ============= HISTÓRIA (TIMELINE) ============= */
 const historyData = [

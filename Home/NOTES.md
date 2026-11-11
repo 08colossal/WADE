@@ -99,7 +99,7 @@ Site em **HTML + CSS + JS puro**, sem build.
 - [ ] **P7 Destaque produto** (decidir)
 - [ ] **P11 Polimento** — `cafe 2/`, `wade-fadeout/`, logo oficial
 - [ ] **Páginas do rodapé** — `bluesafe/`, `befarm/`
-- [ ] **Vídeo do hero**
+- [x] **Vídeo do hero** — feito no §19 (`img/wade.mp4` → loop contínuo)
 
 ### Regras
 
@@ -242,3 +242,118 @@ python3 -m http.server 8080 --directory Home
 
 **Não tocado:** `.benefits`, accordion bg, contatos/badges, breakpoints novos, dots, autoplay, layout desktop.
 
+
+## 16. Fundo do hero fixo — EXECUTADO (14/10/2026)
+
+### 16.1 Comportamento
+
+- `.hero-seq` passou de `position: absolute` (dentro do hero) para **`position: fixed`** com `z-index: -1`.
+- A imagem do hero fica **parada na tela**; ao rolar, o conteúdo sobe por cima e as seções a cobrem.
+- Efeito visível enquanto o hero rola; depois disso as seções opacas escondem o fundo (nenhuma seção transparente).
+
+### 16.2 Mudanças (`Home/style.css`)
+
+| Regra | Antes | Depois |
+|-------|-------|--------|
+| `.hero` | `background: var(--bg-dark)` | `background: transparent` (senão taparia a camada fixa) |
+| `.hero-seq` | `position: absolute; inset: 0; z-index: 0` | `position: fixed; top/left/right: 0; z-index: -1` |
+| `.hero-seq` | — | `aspect-ratio: 16/9` (igual ao `.hero`, composição idêntica no topo) |
+| `@media ≤768` | — | `.hero-seq { aspect-ratio: 4/3 }` |
+| `@media ≤480` | — | `.hero-seq { aspect-ratio: 4/3 }` |
+
+### 16.3 Por que funciona (stacking)
+
+- Todas as seções (`.carousel-section`, `.benefits`, `.solutions`, `.accordion-section`, `.footer`) são **não-posicionadas e opacas** → pintam acima de `z-index: -1`.
+- Nenhuma regra usa `z-index` negativo → nada é escondido por engano.
+- `.hero` é `position: relative` **sem transform/filter/will-change** → não vira containing block e não corta o filho `fixed` (o `overflow: hidden` não se aplica a fixed).
+- Scrub de frames (`script.js`) intacto: o gatilho é a caixa `.hero`, que mantém `aspect-ratio`.
+
+### 16.4 QA (14/10/2026)
+
+| Perfil | seq×hero | seq.top (meio/pós-hero) | overflow | erros |
+|--------|----------|-------------------------|----------|-------|
+| 1440×900 | 1440×810 = 810 | 0 / 0 | 0 | 0 |
+| 768×1024 | 768×576 = 576 | 0 / 0 | 0 | 0 |
+| 390×844 | 390×293 = 293 | 0 / 0 | 0 | 0 |
+
+Screenshots em `/tmp/opencode/qa-hero/` (top / mid-hero / after-hero / footer).
+
+**Risco aceito:** se uma seção futura nascer transparente, o fundo do hero aparecerá atrás dela.
+
+## 17. Fundo da seção carrossel REMOVIDO (guardado) — 14/10/2026
+
+- `.carousel-section` ficou **transparente**: `background`/`background-image`/`size`/`position`/`repeat`
+  (roxo `--bg-purple` + `img/Bolhas-fundo.png`) foram **comentados no próprio `style.css`**, logo acima de `display:flex`.
+- **Para restaurar:** descomentar o bloco `FUNDO ORIGINAL` em `.carousel-section` (`Home/style.css:941`).
+- A imagem `img/Bolhas-fundo.png` **não foi apagada**.
+- Efeito colateral: a seção agora deixa passar o **fundo fixo do hero** (§16) nas ~810px superiores da viewport
+  (16/9) e o `--bg-dark` do `body` abaixo — existe um corte horizontal visível nessa altura.
+- QA 14/10: `background-color: rgba(0,0,0,0)`, `background-image: none`, overflow 0, 0 erros (1440 e 390).
+
+**Não tocado:** `.carousel-card` (fundo translúcido + blur), bubbles (`display:none`), dots, autoplay, layout.
+
+## 18. Vídeo do hero encaixa na página — 14/10/2026
+
+- **Problema:** o layer fixo (§16) usava `aspect-ratio: 16/9` → em viewport mais alta que 16/9
+  (ex.: 1440×900) ele só cobria 810px e o resto mostrava o `--bg-dark` do body → **faixa/corte horizontal**
+  (pior em mobile: 4/3 = ~293px de 844).
+- **Correção (`Home/style.css`):**
+  - `.hero-seq` → `inset: 0` (viewport inteira), **sem** `aspect-ratio`.
+  - `.hero-seq img` → `object-fit: cover; object-position: center` (era `contain` + `right center`).
+  - Removidos os overrides `.hero-seq { aspect-ratio: 4/3 }` dos breakpoints ≤768 e ≤480
+    (`.hero` continua 16/9 / 4/3 — só a caixa do hero; o fundo agora ignora isso).
+- **QA (14/10):** 1440×900 · 1920×1080 · 768×1024 · 390×844 — em 4 pontos de scroll cada:
+  `hero-seq` cobre a viewport inteira (`top=0, bottom=vh`) em **todos**, overflow 0, 0 erros.
+  Screenshots em `/tmp/opencode/qa-fit/`.
+- Efeito: o vídeo/fundo acompanha a página inteira; seções opacas continuam cobrindo (história/MVV/FAQ/footer).
+
+## 19. Hero = vídeo real em loop (`img/wade.mp4`) — EXECUTADO (14/10/2026)
+
+### 19.1 Motivo
+
+Os 54 JPGs de `img/cafe/` tinham fim ao rolar (scrub de ~1 tela) e o fundo "acabava".
+Substituídos por **vídeo MP4 em loop contínuo** — não depende da rolagem, não acaba.
+
+### 19.2 Arquivos
+
+| Arquivo | Origem / obs |
+|---------|--------------|
+| `img/wade.mp4` | original do usuário (1920×1080, 23,976fps, 39,8s, 13,3MB, **com áudio AAC**) — **mantido intacto** |
+| `img/wade-silent.mp4` | **remux** `-c:v copy -an` (cópia bit-a-bit do vídeo, áudio removido) → **12,1MB** |
+| `img/wade-poster.jpg` | frame em **t=3s** (pacote de café) — frame 0 era só gradiente, descartado |
+| `img/cafe/` (54 JPGs, 7,3MB) | **guardado**, fora de uso |
+
+### 19.3 Mudanças
+
+- **`Home/index.html`**
+  - preload → `img/wade-poster.jpg`
+  - `<img id="hero-frame">` → `<video id="hero-video" autoplay muted loop playsinline preload="metadata" poster>` + `<source src="img/wade-silent.mp4" type="video/mp4">`
+  - `muted`+`playsinline` obrigatórios p/ autoplay iOS.
+- **`Home/style.css`**
+  - `.hero-seq img` → `.hero-seq video` (base). Removida a regra duplicada do breakpoint ≤768 (base já faz `cover`/`center`).
+- **`Home/script.js`** — bloco de frames **removido** (linhas 200–305 antigos: `HERO_FRAMES`, preload de 54 imgs, `applyHeroFrame`, ScrollTrigger de scrub, fallback de scroll, autoplay `80ms`). No lugar:
+  ```js
+  if (heroVideo && REDUCE) { pause(); currentTime = 3; }  // frame do poster
+  ```
+  `HAS_GSAP`/`HAS_ST`/`registerPlugin` mantidos (usados pelo resto).
+
+### 19.4 QA (14/10/2026)
+
+| Perfil | readyState | duração | loop | tocando ao rolar | cobre viewport | overflow | erros |
+|--------|-----------|---------|------|------------------|----------------|----------|-------|
+| 1440×900 | 4 | 39,8s | ✅ | ✅ | ✅ | 0 | 0 |
+| 768×1024 | 4 | 39,8s | ✅ | ✅ | ✅ | 0 | 0 |
+| 390×844 | 4 | 39,8s | ✅ | ✅ | ✅ | 0 | 0 |
+| `reducedMotion` | — | — | — | **pausado em t=3** | — | 0 | 0 |
+
+### 19.5 Atenção (servidor de QA)
+
+- `python3 -m http.server` **não suporta Range** → `video.seekable=[0,0]` e o `currentTime=3`
+  do REDUCE não aplica (o autoplay normal funciona). Para QA de vídeo use um servidor com Range:
+  `python3 /tmp/opencode/range_server.py Home 8857` (feito nesta sessão).
+- Em produção (GitHub Pages/Netlify/Vercel) Range funciona normalmente.
+
+### 19.6 Pendências atualizadas
+
+- [x] **Vídeo do hero** (era P/end) — feito no §19.
+- [ ] **P11 Polimento** — `cafe 2/`, `wade-fadeout/`, logo oficial · **`img/cafe/` (7,3MB) pode ser apagado quando validar**
