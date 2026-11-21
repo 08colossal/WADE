@@ -319,7 +319,7 @@ Substituídos por **vídeo MP4 em loop contínuo** — não depende da rolagem, 
 | Arquivo | Origem / obs |
 |---------|--------------|
 | `img/wade.mp4` | original do usuário (1920×1080, 23,976fps, 39,8s, 13,3MB, **com áudio AAC**) — **mantido intacto** |
-| `img/wade-silent.mp4` | **yt-dlp + ffmpeg** (YouTube btlWpBqeHs4, 0–31s, `-c:v copy -an`, VP9 3840×2160) → **~36MB** |
+| `img/wade-silent.mp4` | **yt-dlp + ffmpeg** (YouTube btlWpBqeHs4, 0–31s, `-c:v libx264 -crf 23 -an -movflags +faststart`, H.264 3840×2160) → **~46MB** |
 | `img/wade-poster.jpg` | frame em **t=3s** (pacote de café) — frame 0 era só gradiente, descartado |
 | `img/cafe/` (54 JPGs, 7,3MB) | **guardado**, fora de uso |
 
