@@ -1,7 +1,7 @@
 # WADE — Site (notas para continuar o trabalho)
 
-> Última atualização: 04/10/2026  
-> Lote executado: P0–P4 (GSAP + hero) · P8–P10 (login + auth) · Modal Fale Conosco · Footer · Fixes · **UX sections** · **Responsivo (§14)** · **Ajustes smartphone (§15)**  
+> Última atualização: 21/11/2026  
+> Lote executado: P0–P4 (GSAP + hero) · P8–P10 (login + auth) · Modal Fale Conosco · Footer · Fixes · **UX sections** · **Responsivo (§14)** · **Ajustes smartphone (§15)** · **Hero vídeo 31s (§19 atualizado)**  
 > **Seção demo/bancada REMOVIDA** · **Pasta tutorial/ EXCLUÍDA** · **Link Tutorial no footer ainda no HTML (P5)**
 
 ## 1. Contexto
@@ -319,7 +319,7 @@ Substituídos por **vídeo MP4 em loop contínuo** — não depende da rolagem, 
 | Arquivo | Origem / obs |
 |---------|--------------|
 | `img/wade.mp4` | original do usuário (1920×1080, 23,976fps, 39,8s, 13,3MB, **com áudio AAC**) — **mantido intacto** |
-| `img/wade-silent.mp4` | **remux** `-c:v copy -an` (cópia bit-a-bit do vídeo, áudio removido) → **12,1MB** |
+| `img/wade-silent.mp4` | **yt-dlp + ffmpeg** (YouTube btlWpBqeHs4, 0–31s, `-c:v copy -an`, VP9 3840×2160) → **~36MB** |
 | `img/wade-poster.jpg` | frame em **t=3s** (pacote de café) — frame 0 era só gradiente, descartado |
 | `img/cafe/` (54 JPGs, 7,3MB) | **guardado**, fora de uso |
 
@@ -341,9 +341,9 @@ Substituídos por **vídeo MP4 em loop contínuo** — não depende da rolagem, 
 
 | Perfil | readyState | duração | loop | tocando ao rolar | cobre viewport | overflow | erros |
 |--------|-----------|---------|------|------------------|----------------|----------|-------|
-| 1440×900 | 4 | 39,8s | ✅ | ✅ | ✅ | 0 | 0 |
-| 768×1024 | 4 | 39,8s | ✅ | ✅ | ✅ | 0 | 0 |
-| 390×844 | 4 | 39,8s | ✅ | ✅ | ✅ | 0 | 0 |
+| 1440×900 | 4 | 31s | ✅ | ✅ | ✅ | 0 | 0 |
+| 768×1024 | 4 | 31s | ✅ | ✅ | ✅ | 0 | 0 |
+| 390×844 | 4 | 31s | ✅ | ✅ | ✅ | 0 | 0 |
 | `reducedMotion` | — | — | — | **pausado em t=3** | — | 0 | 0 |
 
 ### 19.5 Atenção (servidor de QA)

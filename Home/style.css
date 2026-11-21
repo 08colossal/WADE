@@ -1091,13 +1091,16 @@ h1, h2, h3, h4,
 /* ============= HISTÓRIA ============= */
 .solutions {
     min-height: 100vh;
-    background: #20153a;
+    background: #20153a63;
+    backdrop-filter: blur(4px) saturate(110%);
+    -webkit-backdrop-filter: blur(4px) saturate(110%);
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     padding: clamp(70px, 10vw, 110px) 4% clamp(50px, 8vw, 90px);
     text-align: center;
+    
 }
 
 .history-title {
