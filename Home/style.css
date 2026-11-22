@@ -1635,11 +1635,15 @@ h1, h2, h3, h4,
 }
 
 /* ============= RESPONSIVO ============= */
-@media (max-width: 768px) {
-    /* Hero 4/3 — um pouco mais alto que o vídeo 16:9 (cover corta topo/baixo). */
+@media (max-width: 800px) {
+    /* Hero 45% + Carrossel 55% = 1 tela */
     .hero {
-        aspect-ratio: 4 / 3;
+        height: calc((100vh - 50px) * 0.45);
         min-height: 0;
+    }
+
+    .header {
+        background: transparent;
     }
 
     .nav {
@@ -1690,6 +1694,7 @@ h1, h2, h3, h4,
 
     /* ----- Seções ~80% ----- */
     .carousel-section {
+        height: calc((100vh - 50px) * 0.55);
         min-height: 0;
         padding: 56px 4% 40px;
     }
@@ -1709,7 +1714,11 @@ h1, h2, h3, h4,
     }
 
     .carousel-content {
+        display: flex;
         flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
         text-align: center;
         gap: 16px;
     }
@@ -1749,12 +1758,16 @@ h1, h2, h3, h4,
 
     /* ----- História (fixes restaurados + 80%) ----- */
     .solutions {
-        min-height: 0;
-        justify-content: flex-start;
+        min-height: calc(100vh - 50px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
         padding: 40px 4% 36px;
     }
 
     .history-title {
+        margin-top: 50px;
         margin-bottom: 24px;
     }
 
@@ -1781,6 +1794,7 @@ h1, h2, h3, h4,
 
     .stars-wrap {
         width: 100%;
+        margin-bottom: 50px;
     }
 
     .stars-wrap .stars {
@@ -1797,8 +1811,13 @@ h1, h2, h3, h4,
         display: none;
     }
 
-    /* ----- Benefícios 80% ----- */
+    /* ----- Benefícios (MVV) — centralizado verticalmente ----- */
     .benefits {
+        min-height: calc(100vh - 50px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         padding: 40px 4%;
     }
 
@@ -1832,7 +1851,7 @@ h1, h2, h3, h4,
 
     /* ----- FAQ 80% ----- */
     .accordion-section {
-        min-height: 0;
+        min-height: calc(100vh - 50px);
         padding: 40px 4% 36px;
         gap: 8px;
     }
@@ -1936,7 +1955,11 @@ h1, h2, h3, h4,
 /* ============= CELULAR PEQUENO: redução agressiva ============= */
 @media (max-width: 480px) {
     .hero {
-        aspect-ratio: 4 / 3;
+        height: calc((100vh - 50px) * 0.45);
+    }
+
+    .header {
+        background: transparent;
     }
 
     .hero-content {
@@ -1965,6 +1988,7 @@ h1, h2, h3, h4,
     }
 
     .carousel-section {
+        height: calc((100vh - 50px) * 0.55);
         padding: 40px 4% 28px;
     }
 
@@ -1977,6 +2001,11 @@ h1, h2, h3, h4,
     }
 
     .carousel-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
         gap: 12px;
     }
 
@@ -2002,10 +2031,16 @@ h1, h2, h3, h4,
     }
 
     .solutions {
+        min-height: calc(100vh - 50px);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
         padding: 32px 4% 28px;
     }
 
     .history-title {
+        margin-top: 50px;
         margin-bottom: 18px;
     }
 
@@ -2027,11 +2062,20 @@ h1, h2, h3, h4,
         gap: 8px;
     }
 
+    .stars-wrap {
+        margin-bottom: 50px;
+    }
+
     .star-label {
         font-size: 10px;
     }
 
     .benefits {
+        min-height: calc(100vh - 50px);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         padding: 32px 4%;
     }
 
@@ -2059,6 +2103,7 @@ h1, h2, h3, h4,
     }
 
     .accordion-section {
+        min-height: calc(100vh - 50px);
         padding: 32px 4% 28px;
     }
 

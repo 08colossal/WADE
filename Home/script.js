@@ -10,6 +10,55 @@ if (HAS_GSAP && typeof window.DrawSVGPlugin !== 'undefined') {
     gsap.registerPlugin(DrawSVGPlugin);
 }
 
+/* ============= SANITY CLIENT ============= */
+const SANITY_PROJECT_ID = 'ffzcsfow';
+const SANITY_DATASET = 'production';
+const sanityClient = (window.sanityClient || window.sanity?.createClient) ? (window.sanityClient || window.sanity.createClient({
+    projectId: SANITY_PROJECT_ID,
+    dataset: SANITY_DATASET,
+    useCdn: true,
+    apiVersion: '2024-01-01',
+})) : null;
+
+async function fetchCarouselItems() {
+    if (!sanityClient) return null;
+    try {
+        const items = await sanityClient.fetch(
+            '*[_type == "carouselItem"] | order(order asc) { title, subtitle, description, image, order }'
+        );
+        return items;
+    } catch (e) {
+        console.warn('Sanity: erro ao buscar carrossel', e);
+        return null;
+    }
+}
+
+async function fetchHistoryItems() {
+    if (!sanityClient) return null;
+    try {
+        const items = await sanityClient.fetch(
+            '*[_type == "historyItem"] | order(order asc) { date, title, text, image, order }'
+        );
+        return items;
+    } catch (e) {
+        console.warn('Sanity: erro ao buscar história', e);
+        return null;
+    }
+}
+
+async function fetchFaqItems() {
+    if (!sanityClient) return null;
+    try {
+        const items = await sanityClient.fetch(
+            '*[_type == "faqItem" && isVisible == true] | order(order asc) { question, answer, order }'
+        );
+        return items;
+    } catch (e) {
+        console.warn('Sanity: erro ao buscar FAQ', e);
+        return null;
+    }
+}
+
 /* ============= SIDEBAR / HAMBURGER (visibilidade controlada por CSS: só mobile) ============= */
 const hamburger = document.getElementById('hamburger');
 const sidebar = document.getElementById('sidebar');
@@ -42,33 +91,7 @@ window.addEventListener('resize', () => {
 });
 
 /* ============= CAROUSEL ============= */
-const slides = [
-    {
-        img: 'img/mascara.png',
-        alt: 'Máscara capilar Rescue Wade Brasil',
-        title: 'RESCUE MÁSCARA CAPILAR',
-        text: 'A Máscara Capilar Rescue Wade Brasil foi desenvolvida com ativos de alta performance para promover uma hidratação ultra profunda. Penetra no córtex capilar, repondo massa, selando as cutículas e restaurando a elasticidade natural dos fios desde a primeira aplicação.'
-    },
-    {
-        img: 'img/lava-roupa.png',
-        alt: 'Lava roupas enzimático BlueSafe',
-        title: 'LAVA ROUPAS ENZIMÁTICO',
-        text: 'O Lava Roupas Enzimático BlueSafe foi desenvolvido com biotecnologia de alta performance. Preserva cores e tecidos com limpeza profunda e baixa espuma, aroma de alecrim e rendimento de até 25 lavagens.'
-    },
-    {
-        img: 'img/shampoo.png',
-        alt: 'Shampoo Rescue Wade Brasil',
-        title: 'RESCUE SHAMPOO',
-        text: 'O Shampoo Rescue Wade Brasil combina óleo de argan, proteína da seda e óleo de girassol para uma nutrição profunda. Limpa suavemente e deixa os fios com brilho, maciez e leveza.'
-    },
-    {
-        img: 'img/condicionador.png',
-        alt: 'Condicionador Rescue Wade Brasil',
-        title: 'RESCUE CONDICIONADOR',
-        text: 'O Condicionador Rescue Wade Brasil sela as cutículas e potencializa a nutrição profunda dos fios. Cabelos com brilho, maciez e leveza desde a primeira aplicação.'
-    }
-];
-
+let slides = [];
 let currentSlide = 0;
 let autoplay = null;
 const dots = document.querySelectorAll('.dot');
@@ -78,6 +101,64 @@ const slideTitleEl = document.getElementById('carousel-slide-title');
 const lineEl = document.getElementById('carousel-line');
 const imgEl = document.getElementById('carousel-img');
 const imgWrap = document.getElementById('carousel-img-wrap');
+
+/* Fallback slides (usados se Sanity falhar) */
+const fallbackSlides = [
+    { img: 'img/mascara.png', alt: 'Máscara capilar Rescue Wade Brasil', title: 'RESCUE MÁSCARA CAPILAR', text: 'A Máscara Capilar Rescue Wade Brasil foi desenvolvida com ativos de alta performance para promover uma hidratação ultra profunda. Penetra no córtex capilar, repondo massa, selando as cutículas e restaurando a elasticidade natural dos fios desde a primeira aplicação.' },
+    { img: 'img/lava-roupa.png', alt: 'Lava roupas enzimático BlueSafe', title: 'LAVA ROUPAS ENZIMÁTICO', text: 'O Lava Roupas Enzimático BlueSafe foi desenvolvido com biotecnologia de alta performance. Preserva cores e tecidos com limpeza profunda e baixa espuma, aroma de alecrim e rendimento de até 25 lavagens.' },
+    { img: 'img/shampoo.png', alt: 'Shampoo Rescue Wade Brasil', title: 'RESCUE SHAMPOO', text: 'O Shampoo Rescue Wade Brasil combina óleo de argan, proteína da seda e óleo de girassol para uma nutrição profunda. Limpa suavemente e deixa os fios com brilho, maciez e leveza.' },
+    { img: 'img/condicionador.png', alt: 'Condicionador Rescue Wade Brasil', title: 'RESCUE CONDICIONADOR', text: 'O Condicionador Rescue Wade Brasil sela as cutículas e potencializa a nutrição profunda dos fios. Cabelos com brilho, maciez e leveza desde a primeira aplicação.' }
+];
+
+/* Renderiza carrossel a partir dos slides (Sanity ou fallback) */
+function renderCarousel() {
+    /* Atualiza títulos na barra superior */
+    titles.forEach((t, i) => {
+        if (slides[i]) {
+            t.textContent = slides[i].subtitle || slides[i].title;
+        }
+    });
+    /* Renderiza slide atual */
+    updateSlide(0);
+}
+
+/* Atualiza slide específico */
+function updateSlide(index) {
+    if (!slides[index]) return;
+    currentSlide = index;
+    const slide = slides[index];
+    if (imgEl) {
+        imgEl.src = slide.img;
+        imgEl.alt = slide.alt || slide.title;
+    }
+    if (slideTitleEl) slideTitleEl.textContent = slide.title;
+    if (textEl) textEl.textContent = slide.text;
+    dots.forEach((d, i) => d.classList.toggle('active', i === index));
+    titles.forEach((t, i) => t.classList.toggle('active', i === index));
+    if (lineEl && typeof moveLine === 'function') moveLine(index);
+}
+
+/* Inicializa carrossel: busca no Sanity ou usa fallback */
+async function initCarousel() {
+    const sanityItems = await fetchCarouselItems();
+    if (sanityItems && sanityItems.length > 0) {
+        slides = sanityItems.map(item => ({
+            img: item.image?.asset?._ref
+                ? `https://cdn.sanity.io/images/${SANITY_PROJECT_ID}/${SANITY_DATASET}/${item.image.asset._ref.replace('image-', '').replace('-png', '.png').replace('-jpg', '.jpg').replace('-jpeg', '.jpeg').replace('-webp', '.webp')}`
+                : 'img/mascara.png',
+            alt: item.image?.alt || item.title,
+            title: item.title,
+            text: item.description || ''
+        }));
+    } else {
+        slides = fallbackSlides;
+    }
+    renderCarousel();
+    /* Inicializa autoplay 3D etc. */
+    initCarousel3D();
+    initCarouselTitlesNav();
+    initAutoplay();
+}
 
 /* ============= CARROSSEL 3D (GSAP hover na imagem) — só desktop com mouse ============= */
 (function initCarousel3D() {
@@ -208,25 +289,15 @@ if (heroVideo && REDUCE) {
 }
 
 /* ============= HISTÓRIA (TIMELINE) ============= */
-const historyData = [
-    {
-        title: '2018 - Início da ideia',
-        text: 'O fundador estuda mercados globais e observa o lento avanço da inovação e sustentabilidade no Brasil, gerando a inquietação que daria origem à empresa.'
-    },
-    {
-        title: '2019 - Primeiros produtos',
-        text: 'A visão ganha forma com o nascimento da Wade e o lançamento de seus primeiros produtos focados na área de nutrição e bem-estar.'
-    },
-    {
-        title: '2025 - Expansão da marca',
-        text: 'O grupo expande com a criação das marcas BeFarm e BlueSafe, além de conquistar a propriedade integral de seu aplicativo, garantindo independência tecnológica'
-    },
-    {
-        title: '2026 - Início da parceria',
-        text: 'Em 2026, inicia-se uma nova fase de desenvolvimento com a aproximação e parceria com o Biopark, um dos principais ecossistemas de inovação do Brasil. Essa união estabelece as bases estruturais para o futuro da empresa, focando em pesquisa, industrialização, desenvolvimento tecnológico, expansão sustentável e educação corporativa.'
-    }
+/* Fallback history data (usados se Sanity falhar) */
+const fallbackHistoryData = [
+    { date: '2018', title: 'Início da ideia', text: 'O fundador estuda mercados globais e observa o lento avanço da inovação e sustentabilidade no Brasil, gerando a inquietação que daria origem à empresa.' },
+    { date: '2019', title: 'Primeiros produtos', text: 'A visão ganha forma com o nascimento da Wade e o lançamento de seus primeiros produtos focados na área de nutrição e bem-estar.' },
+    { date: '2025', title: 'Expansão da marca', text: 'O grupo expande com a criação das marcas BeFarm e BlueSafe, além de conquistar a propriedade integral de seu aplicativo, garantindo independência tecnológica' },
+    { date: '2026', title: 'Início da parceria', text: 'Em 2026, inicia-se uma nova fase de desenvolvimento com a aproximação e parceria com o Biopark, um dos principais ecossistemas de inovação do Brasil. Essa união estabelece as bases estruturais para o futuro da empresa, focando em pesquisa, industrialização, desenvolvimento tecnológico, expansão sustentável e educação corporativa.' }
 ];
 
+let historyData = [];
 const historyTitleEl = document.getElementById('history-entry-title');
 const historyTextEl = document.getElementById('history-entry-text');
 const starItems = document.querySelectorAll('.star-item');
@@ -265,8 +336,47 @@ starItems.forEach(star => {
     });
 });
 
-changeHistory(0);
-window.addEventListener('resize', layoutHistoryProgress);
+/* Inicializa história: busca no Sanity ou usa fallback */
+async function initHistory() {
+    const sanityItems = await fetchHistoryItems();
+    if (sanityItems && sanityItems.length > 0) {
+        historyData = sanityItems.map(item => ({
+            date: item.date,
+            title: item.title,
+            text: item.text
+        }));
+    } else {
+        historyData = fallbackHistoryData;
+    }
+    /* Atualiza estrelas no DOM se vieram do Sanity (número pode variar) */
+    if (starItems.length !== historyData.length) {
+        /* Reconstrói estrelas se quantidade mudou */
+        renderHistoryStars();
+    }
+    changeHistory(0);
+    window.addEventListener('resize', layoutHistoryProgress);
+}
+
+/* Reconstrói estrelas no DOM (se quantidade veio diferente do Sanity) */
+function renderHistoryStars() {
+    if (!starsContainer) return;
+    starsContainer.innerHTML = '';
+    historyData.forEach((item, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'star-item' + (index === 0 ? ' active' : '');
+        btn.dataset.index = index;
+        btn.setAttribute('aria-label', `Ver história de ${item.date}`);
+        btn.innerHTML = `<span class="star-label">${item.date}</span>`;
+        starsContainer.appendChild(btn);
+        btn.addEventListener('click', () => changeHistory(index));
+    });
+    /* Re-seleciona starItems após reconstrução */
+    const newStarItems = document.querySelectorAll('.star-item');
+    Array.from(newStarItems).forEach((star, idx) => {
+        star.dataset.index = idx;
+        star.addEventListener('click', () => changeHistory(idx));
+    });
+}
 
 /* ============= MODAL FALE CONOSCO ============= */
 (function () {
@@ -412,10 +522,92 @@ window.addEventListener('resize', layoutHistoryProgress);
         });
     }
 
-    function escapeHtml(str) {
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    }
+function escapeHtml(str) {
+    return str.replace(/&/g, '&').replace(/</g, '<').replace(/>/g, '>').replace(/"/g, '"').replace(/'/g, "'");
+}
 })();
+
+/* ============= FAQ (DÚVIDAS) - SANITY ============= */
+/* Fallback FAQ data */
+const fallbackFaqItems = [
+    { question: 'Os produtos WADE são sustentáveis?', answer: 'Sim. Os produtos WADE são desenvolvidos com ativos de alta performance e embalagens recicláveis, respeitando o meio ambiente em todas as etapas.' },
+    { question: 'Os produtos são testados em animais?', answer: 'Não. Nenhum produto WADE é testado em animais. Todos os testes são realizados com métodos alternativos certificados.' },
+    { question: 'Onde posso comprar produtos WADE?', answer: 'Você encontra os produtos WADE com revendedores autorizados, no nosso aplicativo e nos pontos de venda parceiros.' },
+    { question: 'Como me tornar um revendedor WADE?', answer: 'Baixe o aplicativo WADE, cadastre-se como revendedor e comece a vender com condições exclusivas.' },
+    { question: 'Os produtos possuem orientação de uso?', answer: 'Sim. Cada produto acompanha o modo de uso no rótulo, além de tutoriais completos no aplicativo e com os revendedores.' }
+];
+
+let faqItems = [];
+
+/* Renderiza itens do FAQ no DOM */
+function renderFaq(faq) {
+    const container = document.querySelector('.accordion-section .accordion-item');
+    if (!container) return;
+
+    const items = container.parentElement?.querySelectorAll('.accordion-item');
+    if (!items) return;
+
+    faq.forEach((item, index) => {
+        const accordionItem = items[index];
+        if (!accordionItem) return;
+
+        const header = accordionItem.querySelector('.accordion-header span:first-child');
+        const body = accordionItem.querySelector('.accordion-body p');
+
+        if (header) header.textContent = item.question;
+        if (body) body.textContent = item.answer;
+    });
+
+    /* Se houver mais itens do Sanity do que no HTML, cria dinamicamente */
+    if (faq.length > items.length) {
+        const accordionSection = document.querySelector('.accordion-section');
+        if (!accordionSection) return;
+
+        const existingItems = Array.from(items);
+        const lastItem = existingItems[existingItems.length - 1];
+
+        for (let i = items.length; i < faq.length; i++) {
+            const item = faq[i];
+            const newItem = document.createElement('div');
+            newItem.className = 'accordion-item';
+            newItem.innerHTML = `
+                <div class="accordion-left"></div>
+                <div class="accordion-content">
+                    <div class="accordion-header" onclick="toggleAccordion(this)">
+                        <span>${escapeHtml(item.question)}</span>
+                        <span class="arrow">&#8250;</span>
+                    </div>
+                    <div class="accordion-body">
+                        <p>${escapeHtml(item.answer)}</p>
+                    </div>
+                </div>
+            `;
+            if (lastItem && lastItem.nextSibling) {
+                lastItem.parentElement.insertBefore(newItem, lastItem.nextSibling);
+            } else {
+                accordionSection.insertBefore(newItem, accordionSection.querySelector('.faq-cta'));
+            }
+        }
+    }
+}
+
+/* Inicializa FAQ: busca no Sanity ou usa fallback */
+async function initFaq() {
+    const sanityItems = await fetchFaqItems();
+    if (sanityItems && sanityItems.length > 0) {
+        faqItems = sanityItems;
+    } else {
+        faqItems = fallbackFaqItems;
+    }
+    renderFaq(faqItems);
+}
+
+/* ============= INICIALIZAÇÃO SANITY (Carrossel + História + FAQ) ============= */
+document.addEventListener('DOMContentLoaded', () => {
+    initCarousel();
+    initHistory();
+    initFaq();
+});
 
 /* ============= VOLTAR AO TOPO ============= */
 (function () {

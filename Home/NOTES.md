@@ -357,3 +357,168 @@ Substituídos por **vídeo MP4 em loop contínuo** — não depende da rolagem, 
 
 - [x] **Vídeo do hero** (era P/end) — feito no §19.
 - [ ] **P11 Polimento** — `cafe 2/`, `wade-fadeout/`, logo oficial · **`img/cafe/` (7,3MB) pode ser apagado quando validar**
+
+## 20. Layout mobile: cada combo ocupa uma tela (21/11/2026)
+
+### 20.1 Objetivo
+Em mobile (≤800px e ≤480px), cada combinação de conteúdo deve preencher exatamente 100% da altura do viewport (descontando o header fixo de 50px).
+
+### 20.2 Combos e alturas
+
+| Tela | Combo | Seções CSS | Altura mobile |
+|------|-------|------------|---------------|
+| 1 | Hero + Carrossel | `.hero` + `.carousel-section` | 45% / 55% (`calc((100vh - 50px) * 0.45)` / `* 0.55`) |
+| 2 | Missão (MVV) | `.benefits` | 100% (`calc(100vh - 50px)`) |
+| 3 | Nossa história | `.solutions` | 100% (`calc(100vh - 50px)`) |
+| 4 | Dúvidas + FAQ CTA | `.accordion-section` | 100% (`calc(100vh - 50px)`) |
+
+### 20.3 Header transparente em mobile
+Em `@media (max-width: 800px)` e `@media (max-width: 480px)`:
+- `.header { background: transparent; }` — remove a barra cinza-escura (`#1f1f1f`), deixando apenas o hambúrguer visível sobre o conteúdo.
+
+### 20.4 Centralização do carrossel (Tela 1)
+Em `@media (max-width: 800px)` e `@media (max-width: 480px)`:
+- `.carousel-content`: `display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%` — centraliza imagem, título e texto vertical e horizontalmente na seção carrossel.
+
+### 20.5 Nossa História — texto centralizado e estrelas no rodapé (Tela 3)
+Em `@media (max-width: 800px)` e `@media (max-width: 480px)`:
+- `.solutions`: `display: flex; flex-direction: column; justify-content: space-between; text-align: center`
+- `.history-title`: `margin-top: 50px`
+- `.stars-wrap`: `margin-bottom: 50px`
+
+### 20.6 Alterações em `Home/style.css`
+- `@media (max-width: 800px)` (era 768px):
+  - `.hero`: `height: calc((100vh - 50px) * 0.45)`, removido `aspect-ratio: 4/3`
+  - `.carousel-section`: `height: calc((100vh - 50px) * 0.55)`
+  - `.carousel-content`: centralizado vertical/horizontal (`flex + align-items/justify-content center`)
+  - `.solutions`: `min-height: calc(100vh - 50px); display: flex; flex-direction: column; justify-content: space-between; text-align: center`
+  - `.history-title`: `margin-top: 50px`
+  - `.stars-wrap`: `margin-bottom: 50px`
+  - `.benefits`: `min-height: calc(100vh - 50px)`
+  - `.accordion-section`: `min-height: calc(100vh - 50px)`
+  - `.header`: `background: transparent`
+
+- `@media (max-width: 480px)`:
+  - Mesmas regras acima
+
+### 20.7 O que NÃO foi alterado
+- `index.html` — estrutura mantida
+- Desktop (>800px) — layout inalterado
+- Proporção Hero/Carrossel: 45%/55%
+
+### 20.8 QA sugerido
+Testar em viewports 360×740, 390×844, 414×896, 768×1024, 800×1280:
+- Cada combo preenche a tela sem scroll interno excessivo
+- Header mostra só hambúrguer, sem barra cinza
+- Carrossel centralizado na sua metade da tela
+- Nossa História: título e texto centralizados, estrelas no rodapé com 50px de margem
+- Rola suavemente entre combos
+
+## 21. Integração Sanity CMS (22/11/2026)
+
+### 21.1 Objetivo
+Substituir conteúdo hardcoded (carrossel e história) por dados gerenciáveis via Sanity CMS, permitindo adicionar/editar itens sem tocar no código.
+
+### 21.2 Estrutura do Sanity
+
+| Item | Detalhes |
+|------|----------|
+| Project ID | `ffzcsfow` |
+| Dataset | `production` |
+| Studio | `studio-wade/` (raiz do repo, irmão de `Home/`) |
+| Deploy Studio | Sanity Cloud (URL: `https://ffzcsfow.sanity.studio`) |
+| API Token | Configurado (permissão de leitura/escrita) |
+
+### 21.3 Schemas criados
+
+**`carouselItem`** (`studio-wade/schemaTypes/carouselItem.ts`):
+- `title` (string) — Título do slide
+- `subtitle` (string) — Subtítulo / nome do produto
+- `description` (text) — Descrição completa
+- `image` (image, aceita PNG) — Imagem do produto
+- `order` (number) — Ordem de exibição
+
+**`historyItem`** (`studio-wade/schemaTypes/historyItem.ts`):
+- `date` (string) — Data / Ano (ex: "2018")
+- `title` (string) — Título da estrela
+- `text` (text) — Texto da história
+- `image` (image, opcional) — Imagem da estrela
+- `order` (number) — Ordem de exibição
+
+### 21.4 Conteúdo populado via API
+
+4 itens de carrossel + 4 itens de história criados via mutations API.
+
+### 21.5 Alterações no Frontend (`Home/`)
+
+**`index.html`** (linha 20):
+```html
+<script src="https://cdn.jsdelivr.net/npm/@sanity/client@6/dist/sanity-client.min.js"></script>
+```
+
+**`script.js`** — principais adições:
+- Cliente Sanity inicializado no topo (`SANITY_PROJECT_ID`, `SANITY_DATASET`)
+- `fetchCarouselItems()` / `fetchHistoryItems()` — buscam dados via GROQ
+- `fallbackSlides` / `fallbackHistoryData` — fallback se Sanity indisponível
+- `initCarousel()` / `initHistory()` — inicializam carrossel e história no `DOMContentLoaded`
+- `renderCarousel()` / `renderHistoryStars()` — renderizam dinamicamente
+- Fallback automático se Sanity falhar (conteúdo hardcoded mantido como backup)
+
+### 21.6 Como adicionar nova estrela na História (fluxo)
+
+1. Acessar `https://ffzcsfow.sanity.studio`
+2. Criar novo documento `historyItem`
+3. Preencher: `date` (ex: "2027"), `title`, `text`, `order` (inteiro)
+4. Publicar
+5. Recarregar site → nova estrela aparece automaticamente
+
+### 21.7 Studio Sanity
+
+**Local:** `studio-wade/` (raiz do repo)
+**Deploy:** Sanity Cloud — rodar no Windows:
+```cmd
+cd C:\Users\Giovana\Documents\GITHUB\WADE\studio-wade
+npx sanity deploy
+```
+**URL do Studio:** `https://ffzcsfow.sanity.studio`
+
+### 21.8 Próximos passos (possíveis)
+
+- Adicionar campo `image` no carrossel (upload PNG no Studio)
+- Schema para contatos/footer (`contactInfo`)
+- Preview em tempo real (Sanity Presentation)
+
+### 21.9 FAQ Schema — `faqItem` (22/11/2026)
+
+**Schema:** `studio-wade/schemaTypes/faqItem.ts`
+
+| Campo | Tipo | Obrigatório | Descrição |
+|-------|------|-------------|-----------|
+| `question` | string | Sim | Pergunta exibida no FAQ |
+| `answer` | text | Sim | Resposta completa |
+| `order` | number | Sim | Ordem de exibição |
+| `isVisible` | boolean | Não | Controla se aparece no site (padrão: true) |
+
+**Frontend (`script.js`):**
+- `fetchFaqItems()` — busca itens visíveis ordenados por `order`
+- `fallbackFaqItems` — fallback se Sanity indisponível
+- `initFaq()` — inicializa no `DOMContentLoaded`
+- `renderFaq()` — atualiza accordions existentes e cria novos dinamicamente se houver mais itens no Sanity
+
+**Conteúdo inicial populado (5 itens):**
+1. "Os produtos WADE são sustentáveis?"
+2. "Os produtos são testados em animais?"
+3. "Onde posso comprar produtos WADE?"
+4. "Como me tornar um revendedor WADE?"
+5. "Os produtos possuem orientação de uso?"
+
+**Como editar/adicionar FAQ no Studio:**
+1. Acessar `https://wade.sanity.studio`
+2. Criar/editar documento `faqItem`
+3. Preencher: `question`, `answer`, `order`, `isVisible`
+5. Publicar → aparece no site automaticamente (sem deploy do site)
+
+**Como adicionar nova pergunta:**
+1. No Studio, criar novo `faqItem`
+2. Definir `order` (inteiro crescente)
+3. Publicar → novo accordion aparece automaticamente no site
